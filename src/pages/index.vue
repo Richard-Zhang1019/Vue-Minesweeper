@@ -1,62 +1,64 @@
 <script setup lang="ts">
-const user = useUserStore()
-const name = $ref(user.savedName)
-
-const router = useRouter()
-const go = () => {
-  if (name)
-    router.push(`/hi/${encodeURIComponent(name)}`)
+interface BlockState {
+  // x坐标
+  x: number
+  // y坐标
+  y: number
+  // 是否被翻开
+  revealed?: boolean
+  // 是否是地雷
+  mine?: boolean
+  // 是否被标记
+  flagged?: boolean
+  // 周边地雷数量
+  adjacentMines?: number
 }
 
-const { t } = useI18n()
+const WIDTH = 10
+const HEIGHT = 10
+const state = reactive(
+  Array.from({ length: HEIGHT }, (_, y) =>
+    Array.from({ length: WIDTH }, (_, x): BlockState => ({
+      x, y,
+    })),
+  ),
+)
+
+// 生成地雷
+function generateMines() {
+  for (const row of state) {
+    for (const block of row)
+      block.mine = Math.random() < 0.1
+  }
+}
+
+// 点击
+function onClick(x: number, y: number) {
+  console.log(x, y)
+}
+
+generateMines()
 </script>
 
 <template>
   <div>
-    <div text-4xl>
-      <div i-carbon-campsite inline-block />
+    <div m-4>
+      Minesweeper
     </div>
-    <p>
-      <a rel="noreferrer" href="https://github.com/antfu/vitesse" target="_blank">
-        Vitesse
-      </a>
-    </p>
-    <p>
-      <em text-sm opacity-75>{{ t('intro.desc') }}</em>
-    </p>
-
-    <div py-4 />
-
-    <input
-      id="input"
-      v-model="name"
-      :placeholder="t('intro.whats-your-name')"
-      :aria-label="t('intro.whats-your-name')"
-      type="text"
-      autocomplete="false"
-      p="x4 y2"
-      w="250px"
-      text="center"
-      bg="transparent"
-      border="~ rounded gray-200 dark:gray-700"
-      outline="none active:none"
-      @keydown.enter="go"
+    <div
+      v-for="row, y in state"
+      :key="y"
     >
-    <label class="hidden" for="input">{{ t('intro.whats-your-name') }}</label>
-
-    <div>
       <button
-        btn m-3 text-sm
-        :disabled="!name"
-        @click="go"
+        v-for="item, x in row"
+        :key="x"
+        w-10 h-10
+        hover:bg-gray
+        border
+        @click="onClick(x, y)"
       >
-        {{ t('button.go') }}
+        {{ item.mine ? 'X' : '-' }}
       </button>
     </div>
   </div>
 </template>
-
-<route lang="yaml">
-meta:
-  layout: home
-</route>
