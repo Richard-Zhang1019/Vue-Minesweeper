@@ -30,12 +30,12 @@ const state = reactive(
 function generateMines() {
   for (const row of state) {
     for (const block of row)
-      block.mine = Math.random() < 0.1
+      block.mine = Math.random() < 0.3
   }
 }
 
-// 记录当前点周围地雷数d
-const direction = [
+// 记录当前点周围地雷数
+const directions = [
   [0, 1],
   [0, -1],
   [1, 0],
@@ -52,16 +52,27 @@ function updateNumbers() {
       if (block.mine)
         return
 
-      direction.forEach(([dx, dy]) => {
-        const x2 = x + dx
-        const y2 = y + dy
-        if (x2 < 0 || x2 > WIDTH || y2 < 0 || y2 > HEIGHT)
-          return
-        if (state[y2][x2].mine)
+      getSiblings(block).forEach((b) => {
+        if (b.mine)
           block.adjacentMines += 1
       })
     })
   })
+}
+
+function getSiblings(block: BlockState) {
+  return directions.map(([dx, dy]) => {
+    const x2 = block.x + dx
+    const y2 = block.y + dy
+    if (x2 < 0 || x2 >= WIDTH || y2 < 0 || y2 >= HEIGHT)
+      return undefined
+    return state[y2][x2]
+  })
+    .filter(Boolean) as BlockState[]
+}
+
+function getBlockClass(block: BlockState) {
+  return block.mine ? 'text-red' : 'text-gray'
 }
 
 // 点击
@@ -75,6 +86,7 @@ updateNumbers()
 
 <template>
   <div>
+    <!-- <div>{{ state }}</div> -->
     <div m-4>
       Minesweeper
     </div>
@@ -87,6 +99,7 @@ updateNumbers()
         :key="x"
         w-10 h-10
         hover:bg-gray
+        :class="getBlockClass(item)"
         border
         @click="onClick(x, y)"
       >
