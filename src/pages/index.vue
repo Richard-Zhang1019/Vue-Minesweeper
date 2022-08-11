@@ -11,7 +11,7 @@ interface BlockState {
   // 是否被标记
   flagged?: boolean
   // 周边地雷数量
-  adjacentMines?: number
+  adjacentMines: number
 }
 
 const WIDTH = 10
@@ -19,7 +19,9 @@ const HEIGHT = 10
 const state = reactive(
   Array.from({ length: HEIGHT }, (_, y) =>
     Array.from({ length: WIDTH }, (_, x): BlockState => ({
-      x, y,
+      x,
+      y,
+      adjacentMines: 0,
     })),
   ),
 )
@@ -32,12 +34,43 @@ function generateMines() {
   }
 }
 
+// 记录当前点周围地雷数d
+const direction = [
+  [0, 1],
+  [0, -1],
+  [1, 0],
+  [1, 1],
+  [1, -1],
+  [-1, 0],
+  [-1, 1],
+  [-1, -1],
+]
+
+function updateNumbers() {
+  state.forEach((row, y) => {
+    row.forEach((block, x) => {
+      if (block.mine)
+        return
+
+      direction.forEach(([dx, dy]) => {
+        const x2 = x + dx
+        const y2 = y + dy
+        if (x2 < 0 || x2 > WIDTH || y2 < 0 || y2 > HEIGHT)
+          return
+        if (state[y2][x2].mine)
+          block.adjacentMines += 1
+      })
+    })
+  })
+}
+
 // 点击
 function onClick(x: number, y: number) {
   console.log(x, y)
 }
 
 generateMines()
+updateNumbers()
 </script>
 
 <template>
@@ -57,7 +90,7 @@ generateMines()
         border
         @click="onClick(x, y)"
       >
-        {{ item.mine ? 'X' : '-' }}
+        {{ item.mine ? 'X' : item.adjacentMines }}
       </button>
     </div>
   </div>
