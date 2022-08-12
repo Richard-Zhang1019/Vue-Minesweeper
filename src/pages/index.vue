@@ -5,7 +5,7 @@ interface BlockState {
   // y坐标
   y: number
   // 是否被翻开
-  revealed?: boolean
+  revealed: boolean
   // 是否是地雷
   mine?: boolean
   // 是否被标记
@@ -21,18 +21,11 @@ const state = reactive(
     Array.from({ length: WIDTH }, (_, x): BlockState => ({
       x,
       y,
+      revealed: false,
       adjacentMines: 0,
     })),
   ),
 )
-
-// 生成地雷
-function generateMines() {
-  for (const row of state) {
-    for (const block of row)
-      block.mine = Math.random() < 0.3
-  }
-}
 
 // 记录当前点周围地雷数
 const directions = [
@@ -45,6 +38,27 @@ const directions = [
   [-1, 1],
   [-1, -1],
 ]
+
+// 生成数字颜色
+const numbersColor = [
+  'text-transparent',
+  'text-green-500',
+  'text-blue-500',
+  'text-yellow-500',
+  'text-orange-500',
+  'text-red-500',
+  'text-purple-500',
+  'text-pink-500',
+  'text-teal-500',
+]
+
+// 生成地雷
+function generateMines() {
+  for (const row of state) {
+    for (const block of row)
+      block.mine = Math.random() < 0.3
+  }
+}
 
 function updateNumbers() {
   state.forEach((row, y) => {
@@ -72,12 +86,14 @@ function getSiblings(block: BlockState) {
 }
 
 function getBlockClass(block: BlockState) {
-  return block.mine ? 'text-red' : 'text-gray'
+  if (!block.revealed)
+    return ''
+  return block.mine ? 'text-red-500' : numbersColor[block.adjacentMines]
 }
 
 // 点击
-function onClick(x: number, y: number) {
-  console.log(x, y)
+function onClick(block: BlockState) {
+  block.revealed = true
 }
 
 generateMines()
@@ -93,17 +109,27 @@ updateNumbers()
     <div
       v-for="row, y in state"
       :key="y"
+      flex="~"
+      items-center
+      justify-center
     >
       <button
-        v-for="item, x in row"
+        v-for="block, x in row"
         :key="x"
         w-10 h-10
+        m="0.5"
         hover:bg-gray
-        :class="getBlockClass(item)"
+        flex="~"
+        items-center
+        justify-center
         border
-        @click="onClick(x, y)"
+        :class="getBlockClass(block)"
+        @click="onClick(block)"
       >
-        {{ item.mine ? 'X' : item.adjacentMines }}
+        <div v-if="block.mine" i-mdi-mine />
+        <div v-else>
+          {{ block.adjacentMines }}
+        </div>
       </button>
     </div>
   </div>
