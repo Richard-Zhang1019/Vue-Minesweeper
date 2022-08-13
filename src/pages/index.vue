@@ -2,8 +2,8 @@
 import type { BlockState } from '../types'
 import Block from '../components/Block.vue'
 
-const WIDTH = 10
-const HEIGHT = 10
+const WIDTH = 5
+const HEIGHT = 5
 
 let mineGenerated = false
 

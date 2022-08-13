@@ -13,26 +13,28 @@ const directions = [
 ]
 
 export class GamePlay {
-  WIDTH = 10
-  HEIGHT = 10
-  state: ref<BlockState[][]>([])
+  state = ref<BlockState[][]>([])
+  mineGenerated = false
 
-  constructor(public width: number, public height: number,){
+  constructor(
+    public width: number,
+    public height: number,
+  ){
     watchEffect(this.checkGameState)
     this.reset()
   }
 
   // 重置
   reset(){
-    this.state.value = Array.from({ length: this.HEIGHT }, (_, y) =>
-    Array.from({ length: this.WIDTH }, (_, x): BlockState => ({
-      x,
-      y,
-      revealed: false,
-      adjacentMines: 0,
-    })),
-  ),
-  }
+    this.state.value = Array.from({ length: this.height }, (_, y) =>
+      Array.from({ length: this.width }, (_, x): BlockState => ({
+        x,
+        y,
+        revealed: false,
+        adjacentMines: 0,
+      })),
+    ),
+  },
 
   // 检查游戏状态
   checkGameState() {
