@@ -142,7 +142,7 @@ updateNumbers()
         :key="x"
         :block="block"
         @click="onClick(block)"
-        @contextmenu="onRightClick(block)"
+        @contextmenu.prevent="onRightClick(block)"
       />
     </div>
   </div>
