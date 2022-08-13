@@ -1,22 +1,13 @@
 <script setup lang="ts">
-interface BlockState {
-  // x坐标
-  x: number
-  // y坐标
-  y: number
-  // 是否被翻开
-  revealed: boolean
-  // 是否是地雷
-  mine?: boolean
-  // 是否被标记
-  flagged?: boolean
-  // 周边地雷数量
-  adjacentMines: number
-}
+import type { BlockState } from '../types'
+import Block from '../components/Block.vue'
 
 const WIDTH = 10
 const HEIGHT = 10
-const state = reactive(
+
+let mineGenerated = false
+
+const state = ref(
   Array.from({ length: HEIGHT }, (_, y) =>
     Array.from({ length: WIDTH }, (_, x): BlockState => ({
       x,
@@ -39,29 +30,22 @@ const directions = [
   [-1, -1],
 ]
 
-// 生成数字颜色
-const numbersColor = [
-  'text-transparent',
-  'text-green-500',
-  'text-blue-500',
-  'text-yellow-500',
-  'text-orange-500',
-  'text-red-500',
-  'text-purple-500',
-  'text-pink-500',
-  'text-teal-500',
-]
-
 // 生成地雷
-function generateMines() {
-  for (const row of state) {
-    for (const block of row)
-      block.mine = Math.random() < 0.3
+function generateMines(initial: BlockState) {
+  for (const row of state.value) {
+    for (const block of row) {
+      if (Math.abs(initial.x - block.x) <= 1)
+        continue
+      if (Math.abs(initial.y - block.y) <= 1)
+        continue
+      block.mine = Math.random() < 0.2
+    }
   }
+  updateNumbers()
 }
 
 function updateNumbers() {
-  state.forEach((row, y) => {
+  state.value.forEach((row, y) => {
     row.forEach((block, x) => {
       if (block.mine)
         return
@@ -80,29 +64,69 @@ function getSiblings(block: BlockState) {
     const y2 = block.y + dy
     if (x2 < 0 || x2 >= WIDTH || y2 < 0 || y2 >= HEIGHT)
       return undefined
-    return state[y2][x2]
+    return state.value[y2][x2]
   })
     .filter(Boolean) as BlockState[]
 }
 
-function getBlockClass(block: BlockState) {
-  if (!block.revealed)
-    return ''
-  return block.mine ? 'text-red-500' : numbersColor[block.adjacentMines]
-}
-
 // 点击
 function onClick(block: BlockState) {
+  if (!mineGenerated) {
+    generateMines(block)
+    mineGenerated = true
+  }
   block.revealed = true
+  if (block.mine) {
+    alert('Boom!')
+    return
+  }
+  expendZero(block)
 }
 
-generateMines()
+// 右键点击
+function onRightClick(block: BlockState) {
+  // 如果已经翻开 直接return
+  if (block.revealed)
+    return
+
+  // 没有翻开 才能标记
+  block.flagged = !block.flagged
+}
+
+// 展开
+function expendZero(block: BlockState) {
+  if (block.adjacentMines)
+    return
+  getSiblings(block).forEach((s) => {
+    if (!s.revealed) {
+      if (!s.flagged)
+        s.revealed = true
+      expendZero(s)
+    }
+  })
+}
+
+// 检查游戏状态
+function checkGameState() {
+  if (!mineGenerated)
+    return
+  const blocks = state.value.flat()
+
+  if (blocks.every(block => block.revealed || block.flagged)) {
+    if (blocks.some(block => block.flagged && block.mine))
+      alert('You Cheat!')
+    else
+      alert('You Win!')
+  }
+}
+
+watchEffect(checkGameState)
+
 updateNumbers()
 </script>
 
 <template>
   <div>
-    <!-- <div>{{ state }}</div> -->
     <div m-4>
       Minesweeper
     </div>
@@ -113,24 +137,13 @@ updateNumbers()
       items-center
       justify-center
     >
-      <button
+      <Block
         v-for="block, x in row"
         :key="x"
-        w-10 h-10
-        m="0.5"
-        hover:bg-gray
-        flex="~"
-        items-center
-        justify-center
-        border
-        :class="getBlockClass(block)"
+        :block="block"
         @click="onClick(block)"
-      >
-        <div v-if="block.mine" i-mdi-mine />
-        <div v-else>
-          {{ block.adjacentMines }}
-        </div>
-      </button>
+        @contextmenu="onRightClick(block)"
+      />
     </div>
   </div>
 </template>
