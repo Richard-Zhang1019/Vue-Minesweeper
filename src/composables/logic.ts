@@ -19,13 +19,13 @@ export class GamePlay {
   constructor(
     public width: number,
     public height: number,
-  ){
-    watchEffect(this.checkGameState)
+  ) {
     this.reset()
+    // watchEffect(this.checkGameState)
   }
 
   // 重置
-  reset(){
+  reset() {
     this.state.value = Array.from({ length: this.height }, (_, y) =>
       Array.from({ length: this.width }, (_, x): BlockState => ({
         x,
@@ -33,59 +33,93 @@ export class GamePlay {
         revealed: false,
         adjacentMines: 0,
       })),
-    ),
-  },
+    )
+  }
 
   // 检查游戏状态
   checkGameState() {
-    if (!mineGenerated)
+    console.log(this.mineGenerated)
+    if (this.mineGenerated === false)
       return
-    const blocks = state.value.flat()
-
-    if (blocks.every(block => block.revealed || block.flagged)) {
-      if (blocks.some(block => block.flagged && block.mine))
-        alert('You Cheat!')
-      else
-        alert('You Win!')
-    }
+    const blocks = this.state.value.flat()
+    if (!blocks.some(block => !block.flagged && !block.mine))
+      alert('You Win!')
   }
 
   // 生成地雷
- generateMines(initial: BlockState) {
-  for (const row of this.state.value) {
-    for (const block of row) {
-      if (Math.abs(initial.x - block.x) <= 1)
-        continue
-      if (Math.abs(initial.y - block.y) <= 1)
-        continue
-      block.mine = Math.random() < 0.2
+  generateMines(initial: BlockState) {
+    for (const row of this.state.value) {
+      for (const block of row) {
+        if (Math.abs(initial.x - block.x) <= 1)
+          continue
+        if (Math.abs(initial.y - block.y) <= 1)
+          continue
+        block.mine = Math.random() < 0.2
+      }
     }
+    this.updateNumbers()
   }
-  this.updateNumbers()
-}
 
- updateNumbers() {
-  this.state.value.forEach((row, y) => {
-    row.forEach((block, x) => {
-      if (block.mine)
-        return
+  updateNumbers() {
+    this.state.value.forEach((row) => {
+      row.forEach((block) => {
+        if (block.mine)
+          return
 
-      this.getSiblings(block).forEach((b) => {
-        if (b.mine)
-          block.adjacentMines += 1
+        this.getSiblings(block).forEach((item) => {
+          if (item.mine)
+            block.adjacentMines += 1
+        })
       })
     })
-  })
-}
+  }
 
- getSiblings(block: BlockState) {
-  return directions.map(([dx, dy]) => {
-    const x2 = block.x + dx
-    const y2 = block.y + dy
-    if (x2 < 0 || x2 >= this.WIDTH || y2 < 0 || y2 >= this.HEIGHT)
-      return undefined
-    return this.state.value[y2][x2]
-  })
-    .filter(Boolean) as BlockState[]
-}
+  getSiblings(block: BlockState) {
+    return directions.map(([dx, dy]) => {
+      const x2 = block.x + dx
+      const y2 = block.y + dy
+      if (x2 < 0 || x2 >= this.height || y2 < 0 || y2 >= this.width)
+        return undefined
+      return this.state.value[y2][x2]
+    })
+      .filter(Boolean) as BlockState[]
+  }
+
+  // 点击
+  onClick(block: BlockState) {
+    // 标记过 点击不会炸
+    if (!this.mineGenerated) {
+      this.generateMines(block)
+      this.mineGenerated = true
+    }
+    block.revealed = true
+    if (block.mine) {
+      alert('Boom!')
+      return
+    }
+    this.expendZero(block)
+  }
+
+  // 右键点击
+  onRightClick(block: BlockState) {
+    // 如果已经翻开 直接return
+    if (block.revealed)
+      return
+
+    // 没有翻开 才能标记
+    block.flagged = !block.flagged
+  }
+
+  // 展开
+  expendZero(block: BlockState) {
+    if (block.adjacentMines)
+      return
+    this.getSiblings(block).forEach((s) => {
+      if (!s.revealed) {
+        if (!s.flagged)
+          s.revealed = true
+        this.expendZero(s)
+      }
+    })
+  }
 }
