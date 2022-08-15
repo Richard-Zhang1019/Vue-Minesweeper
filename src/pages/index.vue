@@ -2,8 +2,9 @@
 import Block from '../components/Block.vue'
 import { GamePlay } from '../composables/logic'
 
-const play = new GamePlay(12, 12)
-const state = play.state
+const play = new GamePlay(5, 5)
+useStorage('vue-minesweeper', play.state)
+const state = computed(() => play.board)
 </script>
 
 <template>
@@ -22,9 +23,14 @@ const state = play.state
         v-for="block, x in row"
         :key="x"
         :block="block"
-        @click="onClick(block)"
-        @contextmenu.prevent="onRightClick(block)"
+        @click="play.onClick(block)"
+        @contextmenu.prevent="play.onRightClick(block)"
       />
     </div>
+  </div>
+  <div>
+    <button m-3 btn @click="play.reset()">
+      RESET
+    </button>
   </div>
 </template>
