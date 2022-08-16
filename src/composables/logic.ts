@@ -51,11 +51,14 @@ export class GamePlay {
 
   // 检查游戏状态
   checkGameState() {
-    if (!this.state.value.mineGenerated || this.state.value.gameState !== 'play')
+    if (!this.state.value.mineGenerated || this.state.value.status !== 'play')
       return
     const blocks = this.board.flat()
-    if (!blocks.some(block => !block.flagged && !block.mine))
+
+    if (!blocks.some(block => !block.mine && !block.revealed)) {
       this.state.value.gameState = 'win'
+      alert('win')
+    }
   }
 
   // 生成地雷
