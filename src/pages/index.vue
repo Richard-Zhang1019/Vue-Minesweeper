@@ -2,9 +2,13 @@
 import Block from '../components/Block.vue'
 import { GamePlay } from '../composables/logic'
 
-const play = new GamePlay(5, 5)
+const play = new GamePlay(10, 10, 30)
 useStorage('vue-minesweeper', play.state)
 const state = computed(() => play.board)
+
+watchEffect(() => {
+  play.checkGameState()
+})
 </script>
 
 <template>

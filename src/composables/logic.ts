@@ -25,12 +25,17 @@ export class GamePlay {
   constructor(
     public width: number,
     public height: number,
+    public minesNumber: number,
   ) {
     this.reset()
   }
 
   get board() {
     return this.state.value.board
+  }
+
+  get blocks() {
+    return this.state.value.board.flat()
   }
 
   // 重置
@@ -49,9 +54,17 @@ export class GamePlay {
     }
   }
 
+  randomRange(min: number, max: number): number {
+    return Math.random() * (max - min) + min
+  }
+
+  randomInt(min: number, max: number): number {
+    return Math.round(this.randomInt(min, max))
+  }
+
   // 检查游戏状态
   checkGameState() {
-    if (!this.state.value.mineGenerated || this.state.value.status !== 'play')
+    if (!this.state.value.mineGenerated || this.state.value.gameState !== 'play')
       return
     const blocks = this.board.flat()
 
