@@ -54,14 +54,6 @@ export class GamePlay {
     }
   }
 
-  randomRange(min: number, max: number): number {
-    return Math.random() * (max - min) + min
-  }
-
-  randomInt(min: number, max: number): number {
-    return Math.round(this.randomInt(min, max))
-  }
-
   // 检查游戏状态
   checkGameState() {
     if (!this.state.value.mineGenerated || this.state.value.gameState !== 'play')
@@ -74,17 +66,34 @@ export class GamePlay {
     }
   }
 
+  randomRange(min: number, max: number): number {
+    return Math.random() * (max - min) + min
+  }
+
+  randomInt(min: number, max: number): number {
+    return Math.round(this.randomInt(min, max))
+  }
+
   // 生成地雷
   generateMines(state: BlockState[][], initial: BlockState) {
-    for (const row of state) {
-      for (const block of row) {
-        if (Math.abs(initial.x - block.x) <= 1)
-          continue
-        if (Math.abs(initial.y - block.y) <= 1)
-          continue
-        block.mine = Math.random() < 0.2
-      }
+    const placeRandom = () => {
+      const x = this.randomInt(0, this.width - 1)
+      const y = this.randomInt(0, this.height - 1)
+      const block = state[y][x]
+      if (Math.abs(initial.x) - block.x)
+        return false
+      if (Math.abs(initial.y) - block.y)
+        return false
+      if (block.mine)
+        return false
+      block.mine = true
+      return true
     }
+    Array.from({ length: this.minesNumber }, () => null).forEach(() => {
+      let placed = false
+      while (!placed)
+        placed = placeRandom()
+    })
     this.updateNumbers()
   }
 

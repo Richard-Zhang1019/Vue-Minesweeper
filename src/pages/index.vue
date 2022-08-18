@@ -9,6 +9,10 @@ const state = computed(() => play.board)
 watchEffect(() => {
   play.checkGameState()
 })
+
+const mineCount = () => {
+  return play.blocks.reduce((a, b) => a + (b.mine ? 1 : 0), 0)
+}
 </script>
 
 <template>
@@ -32,6 +36,7 @@ watchEffect(() => {
       />
     </div>
   </div>
+  <div>Count: {{ mineCount() }}</div>
   <div>
     <button m-3 btn @click="play.reset()">
       RESET
