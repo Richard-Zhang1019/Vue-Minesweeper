@@ -16,7 +16,7 @@ const mineCount = () => {
 </script>
 
 <template>
-  <div>
+  <div w-full overflow-auto>
     <div m-4>
       Minesweeper
     </div>
