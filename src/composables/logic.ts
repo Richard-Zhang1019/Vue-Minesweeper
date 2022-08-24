@@ -71,7 +71,7 @@ export class GamePlay {
   }
 
   randomInt(min: number, max: number): number {
-    return Math.round(this.randomInt(min, max))
+    return Math.round(this.randomRange(min, max))
   }
 
   // 生成地雷
@@ -80,20 +80,19 @@ export class GamePlay {
       const x = this.randomInt(0, this.width - 1)
       const y = this.randomInt(0, this.height - 1)
       const block = state[y][x]
-      if (Math.abs(initial.x) - block.x)
-        return false
-      if (Math.abs(initial.y) - block.y)
+      if (Math.abs(initial.x - block.x) <= 1 && Math.abs(initial.y - block.y) <= 1)
         return false
       if (block.mine)
         return false
       block.mine = true
       return true
     }
-    Array.from({ length: this.minesNumber }, () => null).forEach(() => {
-      let placed = false
-      while (!placed)
-        placed = placeRandom()
-    })
+    Array.from({ length: this.minesNumber }, () => null)
+      .forEach(() => {
+        let placed = false
+        while (!placed)
+          placed = placeRandom()
+      })
     this.updateNumbers()
   }
 
@@ -129,10 +128,14 @@ export class GamePlay {
       return
 
     // 标记过 点击不会炸
+    if (block.flagged)
+      return
+
     if (!this.state.value.mineGenerated) {
       this.generateMines(this.board, block)
       this.state.value.mineGenerated = true
     }
+
     block.revealed = true
     if (block.mine) {
       this.state.value.gameState = 'lost'
@@ -144,10 +147,6 @@ export class GamePlay {
   // 右键点击
   onRightClick(block: BlockState) {
     if (this.state.value.gameState !== 'play')
-      return
-
-    // 如果已经翻开 直接return
-    if (block.revealed)
       return
 
     // 没有翻开 才能标记

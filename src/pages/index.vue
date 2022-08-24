@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import Block from '../components/Block.vue'
 import { GamePlay } from '../composables/logic'
+import { isDev, toggleDev } from '../composables/constant'
 
-const play = new GamePlay(10, 10, 30)
+const play = new GamePlay(10, 10, 20)
 useStorage('vue-minesweeper', play.state)
 const state = computed(() => play.board)
 
@@ -38,6 +39,9 @@ const mineCount = () => {
   </div>
   <div>Count: {{ mineCount() }}</div>
   <div>
+    <button m-3 w-25 btn @click="toggleDev()">
+      {{ isDev ? 'DEV' : 'NORMAL' }}
+    </button>
     <button m-3 btn @click="play.reset()">
       RESET
     </button>
