@@ -19,5 +19,7 @@ useHead({
 </script>
 
 <template>
-  <RouterView />
+  <main font-sans p="y-10" text="center gray-700">
+    <RouterView />
+  </main>
 </template>

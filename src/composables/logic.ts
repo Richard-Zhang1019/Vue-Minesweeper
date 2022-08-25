@@ -39,7 +39,15 @@ export class GamePlay {
   }
 
   // 重置
-  reset() {
+  reset(
+    width = this.width,
+    height = this.height,
+    minesNumber = this.minesNumber,
+  ) {
+    this.width = width
+    this.height = height
+    this.minesNumber = minesNumber
+
     this.state.value = {
       mineGenerated: false,
       gameState: 'play',
@@ -59,6 +67,11 @@ export class GamePlay {
     if (!this.state.value.mineGenerated || this.state.value.gameState !== 'play')
       return
     const blocks = this.board.flat()
+
+    if (blocks.every((blocks) => {
+      return blocks.flagged === true && blocks.mine === true
+    }))
+      alert('win')
 
     if (!blocks.some(block => !block.mine && !block.revealed)) {
       this.state.value.gameState = 'win'
