@@ -153,6 +153,7 @@ export class GamePlay {
     if (block.mine) {
       this.state.value.gameState = 'lost'
       this.showAllMines()
+      alert('fail')
     }
     this.expendZero(block)
   }

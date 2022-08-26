@@ -13,7 +13,7 @@ watchEffect(() => {
 })
 
 const mineCount = () => {
-  return play.blocks.reduce((a, b) => a + (b.mine ? 1 : 0), 0)
+  return play.blocks.reduce((a, b) => a + (b.mine ? 1 : 0) - (b.flagged ? 1 : 0), 0)
 }
 
 function newGame(diffculty: 'easy' | 'medium' | 'hard') {
@@ -71,7 +71,9 @@ function newGame(diffculty: 'easy' | 'medium' | 'hard') {
       </div>
     </div>
   </div>
-  <div>Count: {{ mineCount() }}</div>
+  <div m-2>
+    remaining mines : {{ mineCount() }}
+  </div>
   <div>
     <button m-3 w-25 btn @click="toggleDev()">
       {{ isDev ? 'DEV' : 'NORMAL' }}
