@@ -1,6 +1,6 @@
 <script setup lang="ts">
 useHead({
-  title: 'Vitesse',
+  title: 'SweeperMines',
   meta: [
     { name: 'description', content: 'Opinionated Vite Starter Template' },
     {

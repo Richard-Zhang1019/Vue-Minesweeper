@@ -83,3 +83,14 @@ function newGame(diffculty: 'easy' | 'medium' | 'hard') {
     </button>
   </div>
 </template>
+
+<style scoped>
+/* 禁止移动端长按出现复制等 */
+* {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+</style>
