@@ -167,6 +167,17 @@ export class GamePlay {
     block.flagged = !block.flagged
   }
 
+  // 移动端长按
+  gettouch(block: BlockState) {
+    // 这里设置定时器，定义长按500毫秒触发长按事件
+    setTimeout(() => {
+      if (block.revealed)
+        return
+      block.flagged = !block.flagged
+    }, 500)
+    return false
+  }
+
   showAllMines() {
     this.board.flat().forEach((item) => {
       if (item.mine)

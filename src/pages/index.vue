@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { m } from 'vitest/dist/index-3f764034'
 import Block from '../components/Block.vue'
 import { GamePlay } from '../composables/logic'
 import { isDev, toggleDev } from '../composables/constant'
@@ -67,6 +66,7 @@ function newGame(diffculty: 'easy' | 'medium' | 'hard') {
           :block="block"
           @click="play.onClick(block)"
           @contextmenu.prevent="play.onRightClick(block)"
+          @touchstart="play.gettouch(block)"
         />
       </div>
     </div>
