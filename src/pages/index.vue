@@ -31,10 +31,11 @@ function newGame(diffculty: 'easy' | 'medium' | 'hard') {
 </script>
 
 <template>
-  <div w-full overflow-auto>
+  <div>
     <div m-4>
       Minesweeper
     </div>
+
     <div>
       <button m-3 btn @click="newGame('easy')">
         Easy
@@ -46,19 +47,15 @@ function newGame(diffculty: 'easy' | 'medium' | 'hard') {
         Hard
       </button>
     </div>
-    <div
-      flex="~"
-      items-center
-      justify-center
-      flex-col
-    >
+
+    <div p5 w-full overflow-auto>
       <div
         v-for="row, y in state"
         :key="y"
         flex="~"
         items-center
         justify-center
-        w-max
+        w-max ma
       >
         <Block
           v-for="block, x in row"
