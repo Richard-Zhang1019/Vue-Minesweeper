@@ -12,3 +12,9 @@ export interface BlockState {
   // 周边地雷数量
   adjacentMines: number
 }
+
+export interface GameState {
+  board: BlockState[][]
+  mineGenerated: boolean
+  gameState: 'play' | 'win' | 'lost'
+}
