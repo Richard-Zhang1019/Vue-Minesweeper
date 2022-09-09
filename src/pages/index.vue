@@ -63,7 +63,7 @@ function newGame(diffculty: 'easy' | 'medium' | 'hard') {
           :block="block"
           @click="play.onClick(block)"
           @contextmenu.prevent="play.onRightClick(block)"
-          @touchstart="play.gettouch(block)"
+          @touchstart="play.getTouch(block)"
         />
       </div>
     </div>

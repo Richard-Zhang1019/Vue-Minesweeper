@@ -68,12 +68,12 @@ export class GamePlay {
       return
     const blocks = this.board.flat()
 
-    if (blocks.every((blocks) => {
+    if (blocks.every((blocks: BlockState) => {
       return blocks.flagged === true && blocks.mine === true
     }))
       alert('win')
 
-    if (!blocks.some(block => !block.mine && !block.revealed)) {
+    if (!blocks.some((block: BlockState) => !block.mine && !block.revealed)) {
       this.state.value.gameState = 'win'
       alert('win')
     }
@@ -112,7 +112,7 @@ export class GamePlay {
   // 格子周围的地雷数
   updateNumbers() {
     this.board.forEach((row) => {
-      row.forEach((block) => {
+      row.forEach((block: BlockState) => {
         if (block.mine)
           return
 
@@ -168,7 +168,7 @@ export class GamePlay {
   }
 
   // 移动端长按
-  gettouch(block: BlockState) {
+  getTouch(block: BlockState) {
     // 这里设置定时器，定义长按500毫秒触发长按事件
     setTimeout(() => {
       if (block.revealed)
