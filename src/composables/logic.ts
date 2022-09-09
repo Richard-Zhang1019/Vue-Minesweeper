@@ -1,5 +1,5 @@
 import type { Ref } from 'vue'
-import type { BlockState } from '../types'
+import type { BlockState, GameState } from '../types'
 
 // 记录当前点周围地雷数
 const directions = [
@@ -12,12 +12,6 @@ const directions = [
   [-1, 1],
   [-1, -1],
 ]
-
-interface GameState {
-  board: BlockState[][]
-  mineGenerated: boolean
-  gameState: 'play' | 'win' | 'lost'
-}
 
 export class GamePlay {
   state = ref() as Ref<GameState>
@@ -67,11 +61,6 @@ export class GamePlay {
     if (!this.state.value.mineGenerated || this.state.value.gameState !== 'play')
       return
     const blocks = this.board.flat()
-
-    if (blocks.every((blocks: BlockState) => {
-      return blocks.flagged === true && blocks.mine === true
-    }))
-      alert('win')
 
     if (!blocks.some((block: BlockState) => !block.mine && !block.revealed)) {
       this.state.value.gameState = 'win'
@@ -124,6 +113,7 @@ export class GamePlay {
     })
   }
 
+  // 获取点击格子周围的格子
   getSiblings(block: BlockState) {
     return directions.map(([dx, dy]) => {
       const x2 = block.x + dx
@@ -151,9 +141,9 @@ export class GamePlay {
 
     block.revealed = true
     if (block.mine) {
-      this.state.value.gameState = 'lost'
       this.showAllMines()
-      alert('fail')
+      this.state.value.gameState = 'lost'
+      alert('lost')
     }
     this.expendZero(block)
   }
@@ -178,6 +168,7 @@ export class GamePlay {
     return false
   }
 
+  // 点到雷 炸了 显示全部雷
   showAllMines() {
     this.board.flat().forEach((item) => {
       if (item.mine)
