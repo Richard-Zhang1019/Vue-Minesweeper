@@ -8,7 +8,7 @@ const { t } = useI18n()
       <div i="carbon-sun dark:carbon-moon" />
     </button>
 
-    <a class="icon-btn mx-2" rel="noreferrer" href="https://github.com/Ayu-1019/Vue-Minesweeper" target="_blank" title="GitHub">
+    <a class="icon-btn mx-2" rel="noreferrer" href="https://github.com/richard-zhang1019/Vue-Minesweeper" target="_blank" title="GitHub">
       <div i-carbon-logo-github />
     </a>
   </nav>
