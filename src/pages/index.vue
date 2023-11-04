@@ -15,10 +15,10 @@ const mineCount = () => {
   return play.blocks.reduce((a, b) => a + (b.mine ? 1 : 0) - (b.flagged ? 1 : 0), 0)
 }
 
-function newGame(diffculty: 'easy' | 'medium' | 'hard') {
-  switch (diffculty) {
+function newGame(difficulty: 'easy' | 'medium' | 'hard') {
+  switch (difficulty) {
     case 'easy':
-      play.reset(10, 10, 10)
+      play.reset(5, 5, 2)
       break
     case 'medium':
       play.reset(15, 15, 25)

@@ -62,8 +62,14 @@ export class GamePlay {
       return
     const blocks = this.board.flat()
 
-    if (!blocks.some((block: BlockState) => !block.mine && !block.revealed)) {
+    // 获胜条件 所有地雷格子都被标记
+    if (!blocks.some((block: BlockState) => block.mine && !block.flagged)) {
       this.state.value.gameState = 'win'
+      // 获胜后 翻开所有格子
+      this.board.flat().forEach((item) => {
+        if (!item.mine)
+          item.revealed = true
+      })
       alert('win')
     }
   }
